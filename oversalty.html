@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Tạo MMOItems</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .tab-button.active {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-bottom: 2px solid #38b2ac;
+        }
+        .tab-button.inactive {
+            background-color: #1a202c;
+            color: #718096;
+        }
+        .tab-content {
+            background-color: #2d3748;
+            border-radius: 0 0.5rem 0.5rem 0.5rem;
+            padding: 1.5rem;
+        }
+        .stat-group {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #4a5568;
+        }
+        .stat-group-header {
+            background-color: #2d3748;
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-group-content {
+            padding: 1rem;
+            background-color: #1a202c;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl">
+        <div class="flex border-b border-gray-700 mb-6">
+            <button class="tab-button active" onclick="openTab('mmoitems')">Công Cụ Tạo MMOItems</button>
+            <button class="tab-button inactive" onclick="openTab('smallcaps')">Small Caps Generator</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="mmoitems" class="tab-content">
+            <div class="w-full p-6 md:p-10 rounded-xl shadow-2xl bg-gray-800 border border-gray-700">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-center text-teal-400 mb-2">Công Cụ Tạo MMOItems</h1>
+                <p class="text-center text-gray-400 mb-8">
+                    Chọn các chỉ số và cấp độ để tạo ra một tệp tin MMOItems hoàn chỉnh.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Item ID -->
+                    <div>
+                        <label for="itemId" class="block text-sm font-medium text-gray-300 mb-1">ID Vật Phẩm (Chữ hoa)</label>
+                        <input type="text" id="itemId" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: KIEM_HUYEN_THOAI">
+                    </div>
+
+                    <!-- Item Display Name -->
+                    <div>
+                        <label for="itemName" class="block text-sm font-medium text-gray-300 mb-1">Tên Hiển Thị Của Vật Phẩm</label>
+                        <input type="text" id="itemName" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: Kiếm Huyết Ma">
+                    </div>
+
+                    <!-- Tier Selection -->
+                    <div>
+                        <label for="itemTier" class="block text-sm font-medium text-gray-300 mb-1">Hệ Thống Phẩm Chất</label>
+                        <select id="itemTier" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="COMMON">COMMON</option>
+                            <option value="RARE">RARE</option>
+                            <option value="EPIC">EPIC</option>
+                            <option value="LEGEND">LEGEND</option>
+                            <option value="MYTHIC">MYTHIC</option>
+                            <option value="HERO">HERO</option>
+                        </select>
+                    </div>
+
+                    <!-- Material Selection -->
+                    <div>
+                        <label for="itemMaterial" class="block text-sm font-medium text-gray-300 mb-1">Vật Liệu</label>
+                        <input type="text" id="itemMaterial" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: DIAMOND_SWORD">
+                    </div>
+
+                    <!-- Model ID Input -->
+                    <div>
+                        <label for="modelId" class="block text-sm font-medium text-gray-300 mb-1">ID Mô Hình (Custom Model Data)</label>
+                        <input type="number" id="modelId" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: 12345">
+                    </div>
+
+                    <!-- Item Lore -->
+                    <div class="md:col-span-2">
+                        <label for="itemLore" class="block text-sm font-medium text-gray-300 mb-1">Giới Thiệu (Lore)</label>
+                        <textarea id="itemLore" rows="4" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Nhập câu chuyện hoặc mô tả của vật phẩm. Mỗi dòng một câu."></textarea>
+                    </div>
+                    
+                    <!-- Use Sample Lore Button -->
+                    <div class="md:col-span-2">
+                        <button id="useSampleLoreBtn" class="w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors">
+                            Sử Dụng Lore Mẫu
+                        </button>
+                    </div>
+
+                    <!-- Basic Properties -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="toggleSection('basicProperties')">
+                            <h3 class="text-xl font-bold text-gray-200">Thuộc Tính Cơ Bản</h3>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300 rotate-0" id="basicPropertiesArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div id="basicProperties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="display: none;">
+                            <div>
+                                <label for="durability" class="block text-sm font-medium text-gray-300 mb-1">Durability</label>
+                                <input type="number" id="durability" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: 500">
+                            </div>
+                            <div>
+                                <label for="requiredLevel" class="block text-sm font-medium text-gray-300 mb-1">Required Level</label>
+                                <input type="number" id="requiredLevel" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: 10">
+                            </div>
+                            <div>
+                                <label for="gemSockets" class="block text-sm font-medium text-gray-300 mb-1">Gem Sockets</label>
+                                <input type="number" id="gemSockets" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: 2">
+                            </div>
+                            <div>
+                                <label for="itemCooldown" class="block text-sm font-medium text-gray-300 mb-1">Item Cooldown (giây)</label>
+                                <input type="number" id="itemCooldown" class="w-full px-4 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="VÍ DỤ: 30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Options -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="toggleSection('specialOptionsContainer')">
+                            <h3 class="text-xl font-bold text-gray-200">Tùy Chọn Đặc Biệt</h3>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300 rotate-0" id="specialOptionsContainerArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div id="specialOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="display:none;">
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                <input type="checkbox" name="specialOption" value="unbreakable" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                                <span class="text-gray-200">Unbreakable (không bao giờ hỏng)</span>
+                            </label>
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                <input type="checkbox" name="specialOption" value="unstackable" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                                <span class="text-gray-200">Unstackable (không thể stack)</span>
+                            </label>
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                <input type="checkbox" name="specialOption" value="two-handed" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                                <span class="text-gray-200">Two Handed (vũ khí hai tay)</span>
+                            </label>
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                <input type="checkbox" name="specialOption" value="disable-interactions" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                                <span class="text-gray-200">Disable Interactions (vô hiệu hóa right-click)</span>
+                            </label>
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                <input type="checkbox" name="specialOption" value="disable-crafting" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                                <span class="text-gray-200">Disable Crafting (không thể chế tạo)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat Options in one block -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="toggleSection('statOptions')">
+                            <h3 class="text-xl font-bold text-gray-200">Chọn Chỉ Số</h3>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300 rotate-0" id="statOptionsArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div id="statOptions" class="flex flex-col md:flex-row gap-6" style="display:none;">
+                            <!-- Stat groups -->
+                            <div class="stat-group flex-1">
+                                <div class="stat-group-header" onclick="toggleStats('resourceStats')">
+                                    <h3 class="text-lg font-bold text-gray-200">RESOURCE</h3>
+                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300" id="resourceStatsArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div id="resourceStats" class="stat-group-content" style="display:none;">
+                                    <!-- Resource stat options will be populated here by JS -->
+                                </div>
+                            </div>
+                            <div class="stat-group flex-1">
+                                <div class="stat-group-header" onclick="toggleStats('atkStats')">
+                                    <h3 class="text-lg font-bold text-gray-200">ATK</h3>
+                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300" id="atkStatsArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div id="atkStats" class="stat-group-content" style="display:none;">
+                                    <!-- ATK stat options will be populated here by JS -->
+                                </div>
+                            </div>
+                            <div class="stat-group flex-1">
+                                <div class="stat-group-header" onclick="toggleStats('defStats')">
+                                    <h3 class="text-lg font-bold text-gray-200">DEF</h3>
+                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300" id="defStatsArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <div id="defStats" class="stat-group-content" style="display:none;">
+                                    <!-- DEF stat options will be populated here by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Elemental Damage & Crit Effects -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="toggleSection('elementalSection')">
+                            <h3 class="text-xl font-bold text-gray-200">Chỉ số nguyên tố & Hiệu ứng chí mạng</h3>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300 rotate-0" id="elementalSectionArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div id="elementalSection" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display:none;">
+                            <div class="flex flex-col gap-4">
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">FIRE-DAMAGE (Lửa)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="fire">
+                                </label>
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">ICE-DAMAGE (Băng)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="ice">
+                                </label>
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">WIND-DAMAGE (Gió)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="wind">
+                                </label>
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">EARTH-DAMAGE (Đất)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="earth">
+                                </label>
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">THUNDER-DAMAGE (Sấm)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="thunder">
+                                </label>
+                                <label class="flex flex-col gap-1 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                                    <span class="text-gray-200">WATER-DAMAGE (Nước)</span>
+                                    <input type="number" class="elemental-damage-input w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-element="water">
+                                </label>
+                            </div>
+                            <div class="text-gray-300 p-4 bg-gray-700 rounded-lg">
+                                <h4 class="text-lg font-semibold text-gray-200 mb-2">Hiệu ứng chí mạng nguyên tố</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>**Lửa:** Đốt cháy mục tiêu (thời gian phụ thuộc vào sát thương tấn công).</li>
+                                    <li>**Băng:** Đóng băng mục tiêu (thời gian phụ thuộc vào sát thương tấn công).</li>
+                                    <li>**Gió:** Gây hiệu ứng đẩy lùi diện rộng.</li>
+                                    <li>**Đất:** Gây hiệu ứng hất tung diện rộng.</li>
+                                    <li>**Sấm:** Gây sát thương lan 20% sát thương ban đầu cho các mục tiêu lân cận.</li>
+                                    <li>**Nước:** Gây hiệu ứng làm chậm diện rộng (thời gian phụ thuộc vào sát thương tấn công).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Abilities -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="toggleSection('abilitiesContainer')">
+                            <h3 class="text-xl font-bold text-gray-200">Abilities</h3>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-300 rotate-0" id="abilitiesContainerArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div id="abilitiesContainer" class="flex flex-col gap-4" style="display:none;">
+                            <!-- Abilities will be added here -->
+                        </div>
+                        <button id="addAbilityBtn" class="mt-4 w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors">
+                            Thêm Ability
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                    <button id="randomStatsBtn" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Random Chỉ Số
+                    </button>
+                    <button id="generateBtn" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold rounded-lg shadow-lg hover:from-teal-600 hover:to-teal-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        Tạo MMOItems
+                    </button>
+                </div>
+
+                <!-- Output Section -->
+                <div>
+                    <label for="outputCode" class="block text-sm font-medium text-gray-300 mb-2">Kết Quả Cấu Hình MMOItems</label>
+                    <div class="relative">
+                        <textarea id="outputCode" class="w-full h-96 p-4 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg overflow-auto text-sm" spellcheck="false"></textarea>
+                        <button id="copyBtn" class="absolute top-2 right-2 px-3 py-1 bg-gray-700 text-gray-300 rounded-md text-xs font-bold hover:bg-gray-600 transition-colors">
+                            Sao Chép
+                        </button>
+                    </div>
+                    
+                    <p id="copyMessage" class="mt-2 text-center text-sm text-green-400 opacity-0 transition-opacity duration-300">Đã sao chép!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="smallcaps" class="tab-content hidden">
+            <h2 class="text-2xl font-bold text-gray-200 mb-4">Small Caps Generator</h2>
+            <p class="text-gray-400 mb-4">Nhập văn bản của bạn ở đây để chuyển đổi sang kiểu chữ Small Caps.</p>
+            <div class="mb-4">
+                <label for="smallCapsInput" class="block text-sm font-medium text-gray-300 mb-1">Văn bản gốc</label>
+                <textarea id="smallCapsInput" rows="6" class="w-full p-4 bg-gray-700 text-gray-100 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+            </div>
+            <div class="mb-4">
+                <button id="convertSmallCapsBtn" class="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    Chuyển đổi sang Small Caps
+                </button>
+            </div>
+            <div>
+                <label for="smallCapsOutput" class="block text-sm font-medium text-gray-300 mb-1">Kết quả</label>
+                <textarea id="smallCapsOutput" rows="6" class="w-full p-4 bg-gray-900 text-gray-200 border border-gray-700 rounded-lg overflow-auto text-sm" readonly></textarea>
+            </div>
+            <div class="text-center mt-4">
+                 <button id="copySmallCapsBtn" class="px-3 py-1 bg-gray-700 text-gray-300 rounded-md text-xs font-bold hover:bg-gray-600 transition-colors">
+                    Sao Chép
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="w-full text-center text-xs text-gray-500 mt-4">
+        Make by tienrongmc
+    </div>
+
+    <script>
+        // MMOItems Data
+        const statGroups = {
+            resource: ["max-mana", "health-regen", "mana-regen", "cooldown-reduction", "restore-health", "restore-food", "restore-saturation", "restore-mana", "restore-stamina"],
+            atk: ["critical-strike-chance", "critical-strike-power", "luck", "physical-damage", "magic-damage", "weapon-damage", "attack-speed", "jump-power", "projectile-damage", "projectile-velocity", "sneaking", "durability", "pve-damage", "pvp-damage", "lifesteal", "spell-vampirism", "skill-critical-strike-chance", "skill-critical-strike-power", "blunt-power", "undead-damage", "skill-damage", "projectile-damage"],
+            def: ["max-health", "defense", "block-chance", "armor", "knockback-resistance", "pve-damage-reduction", "pvp-damage-reduction", "magic-damage-reduction", "projectile-damage-reduction", "fall-damage-reduction", "fire-damage-reduction", "block-power", "parry-rating", "dodge-rating", "parry-cooldown-reduction", "block-cooldown-reduction"],
+            debuffs: ["SLOW", "FATIGUE", "WEAKNESS", "POISON", "BLINDNESS", "CONFUSION", "NAUSEA", "HUNGER"],
+        };
+        
+        const specialOptions = ["unbreakable", "unstackable", "two-handed", "disable-interactions", "disable-crafting"];
+
+        const tierStats = {
+            'COMMON': { buffCount: 2, debuffCount: 1 },
+            'RARE': { buffCount: 3, debuffCount: 2 },
+            'EPIC': { buffCount: 4, debuffCount: 3 },
+            'LEGEND': { buffCount: 5, debuffCount: 4 },
+            'MYTHIC': { buffCount: 6, debuffCount: 5 },
+            'HERO': { buffCount: 7, debuffCount: 6 },
+        };
+        
+        const sampleLores = {
+            'COMMON': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &fᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&1&E&2&0&2&2&m &x&2&C&2&E&3&0&m &x&3&A&3&C&3&F&m &x&4&8&4&B&4&D&m &x&5&6&5&9&5&B&m &x&6&4&6&7&6&A&m &x&7&2&7&5&7&8&m &x&8&0&8&3&8&6&m &x&8&E&9&2&9&5&m &x&9&C&A&0&A&3&m &x&A&A&A&E&B&1&m &x&B&8&B&C&C&0&m &x&C&6&C&A&C&E&m &x&D&4&D&9&D&C&m &x&E&2&E&7&E&B&m &x&F&0&F&5&F&9&m &x&E&2&E&7&E&B&m &x&D&4&D&9&D&C&m &x&C&6&C&A&C&E&m &x&B&8&B&C&C&0&m &x&A&A&A&E&B&1&m &x&9&C&A&0&A&3&m &x&8&E&9&2&9&5&m &x&8&0&8&3&8&6&m &x&7&2&7&5&7&8&m &x&6&4&6&7&6&A&m &x&5&6&5&9&5&B&m &x&4&8&4&B&4&D&m &x&3&A&3&C&3&F&m &x&2&C&2&E&3&0&m &x&1&E&2&0&2&2&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f1 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ],
+            'RARE': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &aᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&1&F&A&B&8&9&m &x&2&B&B&0&8&F&m &x&3&8&B&6&9&6&m &x&4&4&B&B&9&C&m &x&5&0&C&0&A&2&m &x&5&C&C&6&A&9&m &x&6&9&C&B&A&F&m &x&7&5&D&0&B&5&m &x&8&1&D&6&B&C&m &x&8&D&D&B&C&2&m &x&9&A&E&0&C&8&m &x&A&6&E&6&C&F&m &x&B&2&E&B&D&5&m &x&B&E&F&0&D&B&m &x&C&B&F&6&E&2&m &x&D&7&F&B&E&8&m &x&C&B&F&6&E&2&m &x&B&E&F&0&D&B&m &x&B&2&E&B&D&5&m &x&A&6&E&6&C&F&m &x&9&A&E&0&C&8&m &x&8&D&D&B&C&2&m &x&8&1&D&6&B&C&m &x&7&5&D&0&B&5&m &x&6&9&C&B&A&F&m &x&5&C&C&6&A&9&m &x&5&0&C&0&A&2&m &x&4&4&B&B&9&C&m &x&3&8&B&6&9&6&m &x&2&B&B&0&8&F&m &x&1&F&A&B&8&9&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f1 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ],
+            'EPIC': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &bᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&2&2&5&7&7&A&m &x&2&3&5&C&7&D&m &x&2&5&6&1&8&0&m &x&2&6&6&6&8&3&m &x&2&8&6&B&8&5&m &x&2&9&7&0&8&8&m &x&2&B&7&5&8&B&m &x&2&C&7&A&8&E&m &x&2&E&8&0&9&1&m &x&2&F&8&5&9&4&m &x&3&1&8&A&9&7&m &x&3&2&8&F&9&A&m &x&3&4&9&4&9&C&m &x&3&5&9&9&9&F&m &x&3&7&9&E&A&2&m &x&3&8&A&3&A&5&m &x&3&7&9&E&A&2&m &x&3&5&9&9&9&F&m &x&3&4&9&4&9&C&m &x&3&2&8&F&9&A&m &x&3&1&8&A&9&7&m &x&2&F&8&5&9&4&m &x&2&E&8&0&9&1&m &x&2&C&7&A&8&E&m &x&2&B&7&5&8&B&m &x&2&9&7&0&8&8&m &x&2&8&6&B&8&5&m &x&2&6&6&6&8&3&m &x&2&5&6&1&8&0&m &x&2&3&5&C&7&D&m &x&2&2&5&7&7&A&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f2 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ],
+            'MYTHIC': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &dᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&4&2&4&8&7&4&m &x&4&C&5&1&7&D&m &x&5&7&5&B&8&5&m &x&6&1&6&4&8&E&m &x&6&B&6&E&9&7&m &x&7&5&7&7&A&0&m &x&8&0&8&1&A&8&m &x&8&A&8&A&B&1&m &x&9&4&9&4&B&A&m &x&9&E&9&D&C&3&m &x&A&9&A&7&C&B&m &x&B&3&B&0&D&4&m &x&B&D&B&A&D&D&m &x&C&7&C&3&E&6&m &x&D&2&C&D&E&E&m &x&D&C&D&6&F&7&m &x&D&2&C&D&E&E&m &x&C&7&C&3&E&6&m &x&B&D&B&A&D&D&m &x&B&3&B&0&D&4&m &x&A&9&A&7&C&B&m &x&9&E&9&D&C&3&m &x&9&4&9&4&B&A&m &x&8&A&8&A&B&1&m &x&8&0&8&1&A&8&m &x&7&5&7&7&A&0&m &x&6&B&6&E&9&7&m &x&6&1&6&4&8&E&m &x&5&7&5&B&8&5&m &x&4&C&5&1&7&D&m &x&4&2&4&8&7&4&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f2 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ],
+            'LEGEND': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &eᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&A&8&6&5&2&3&m &x&A&E&6&D&2&1&m &x&B&4&7&4&1&E&m &x&B&9&7&C&1&C&m &x&B&F&8&3&1&A&m &x&C&5&8&B&1&7&m &x&C&B&9&3&1&5&m &x&D&1&9&A&1&3&m &x&D&6&A&2&1&0&m &x&D&C&A&9&0&E&m &x&E&2&B&1&0&C&m &x&E&8&B&9&0&9&m &x&E&E&C&0&0&7&m &x&F&3&C&8&0&5&m &x&F&9&C&F&0&2&m &x&F&F&D&7&0&0&m &x&F&9&C&F&0&2&m &x&F&3&C&8&0&5&m &x&E&E&C&0&0&7&m &x&E&8&B&9&0&9&m &x&E&2&B&1&0&C&m &x&D&C&A&9&0&E&m &x&D&6&A&2&1&0&m &x&D&1&9&A&1&3&m &x&C&B&9&3&1&5&m &x&C&5&8&B&1&7&m &x&B&F&8&3&1&A&m &x&B&9&7&C&1&C&m &x&B&4&7&4&1&E&m &x&A&E&6&D&2&1&m &x&A&8&6&5&2&3&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f3 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ],
+            'HERO': [
+                "&r &r &r &r &r &r &r &r &r &r &r &r &cᴀʀᴍᴏʀ ɪɴꜰᴏ",
+                "&x&5&1&1&D&4&3&m &x&5&A&1&E&4&1&m &x&6&4&1&E&3&F&m &x&6&D&1&F&3&D&m &x&7&6&1&F&3&B&m &x&7&F&2&0&3&9&m &x&8&9&2&0&3&7&m &x&9&2&2&1&3&5&m &x&9&B&2&1&3&3&m &x&A&4&2&2&3&1&m &x&A&E&2&2&2&F&m &x&B&7&2&3&2&D&m &x&C&0&2&3&2&B&m &x&C&9&2&4&2&9&m &x&D&3&2&4&2&7&m &x&D&C&2&5&2&5&m &x&D&3&2&4&2&7&m &x&C&9&2&4&2&9&m &x&C&0&2&3&2&B&m &x&B&7&2&3&2&D&m &x&A&E&2&2&2&F&m &x&A&4&2&2&3&1&m &x&9&B&2&1&3&3&m &x&9&2&2&1&3&5&m &x&8&9&2&0&3&7&m &x&7&F&2&0&3&9&m &x&7&6&1&F&3&B&m &x&6&D&1&F&3&D&m &x&6&4&1&E&3&F&m &x&5&A&1&E&4&1&m &x&5&1&1&D&4&3&m ",
+                "&r &r &r &7ᴜᴘɢʀᴀᴅᴇ | sᴛᴀᴛs | ʀᴇǫᴜɪʀᴇ",
+                "&r &r &r &r &r &a⇧ &f1 &e⚝    &r &a⇧ &f3 &e⚝   &r &r &c⇩ &f1 &e⚝"
+            ]
+        };
+
+        const abilities = {
+            "Ambers": ["timer", "delay", "mana", "stamina", "cooldown", "percent"],
+            "Blink": ["mana", "stamina", "cooldown", "timer", "range"],
+            "Piercing Attack Effect": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Poison": ["duration", "mana", "stamina", "cooldown", "timer", "amplifier"],
+            "Power Mark": ["duration", "timer", "delay", "mana", "stamina", "cooldown", "stun", "ratio"],
+            "Present Throw": ["damage", "mana", "stamina", "cooldown", "timer", "force", "radius"],
+            "Propagate Damage": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Regen Ally": ["duration", "mana", "stamina", "heal", "cooldown", "timer"],
+            "Rising Scorching Sun": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown", "skillcooldown"],
+            "Rogue Cutthroat Combo": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Rogue Grappling Hook": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Rogue Mark Of Death": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Blizzard": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "inaccuracy", "force"],
+            "Rogue Slice And Dice": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Rogue Smokebomb": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Rogue Vicious Cuts": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Sae1": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Sae2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Shadow Veil": ["duration", "deception", "mana", "stamina", "cooldown", "timer"],
+            "Shock": ["duration", "mana", "stamina", "cooldown", "timer"],
+            "Shockwave": ["mana", "stamina", "cooldown", "length", "knock-up", "timer"],
+            "Shulker Missile": ["duration", "damage", "mana", "stamina", "cooldown", "effect-duration", "timer"],
+            "Sky Smash": ["damage", "mana", "stamina", "cooldown", "timer", "knock-up"],
+            "Bloodbath": ["amount", "mana", "stamina", "cooldown", "timer"],
+            "Slash Attack Effect": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Slashing Attack Effect": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Slow": ["duration", "mana", "stamina", "cooldown", "amplifier", "timer"],
+            "Smite": ["damage", "mana", "stamina", "cooldown", "timer"],
+            "Sneaky Picky": ["timer", "delay", "mana", "stamina", "extra", "cooldown"],
+            "Snowman Turret": ["duration", "damage", "mana", "stamina", "cooldown", "radius", "timer"],
+            "Sparkle": ["damage", "mana", "stamina", "cooldown", "timer", "limit", "radius"],
+            "Splashing Water Flow Turbulent": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Attack Hit Entity": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Blooming Flame Undulation": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown", "skillcooldown"],
+            "Staff Attack Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Deal Damage": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Default": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Default Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Default Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Lightning": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Lightning Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Lightning Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Mana": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Mana Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Blunt Attack Effect": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Mana Hit Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Mana Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Mana Tick 2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Nether": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Nether Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Nether Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Special Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Explode": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Bouncy Fireball": ["damage", "ignite", "mana", "stamina", "cooldown", "radius", "speed", "timer"],
+            "Staff Sunfire Success 2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Success Block": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Success Entity": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Sunfire Tick2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Explode": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Success 2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Success Block": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Bunny Mode": ["duration", "mana", "stamina", "cooldown", "jump-force", "speed", "timer"],
+            "Staff Thunder Success Entity": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Thunder Tick2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Void": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Void Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Void Hit Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Xray": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Xray Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Staff Xray Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Starfall": ["damage", "mana", "stamina", "cooldown", "timer"],
+            "Burn": ["duration", "mana", "stamina", "cooldown", "timer"],
+            "Striking Tide": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Stun": ["duration", "mana", "stamina", "cooldown", "timer"],
+            "Sunfire Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Swiftness": ["duration", "mana", "stamina", "cooldown", "amplifier", "timer"],
+            "Swift Strikes": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Tactical Grenade": ["damage", "mana", "stamina", "cooldown", "timer", "radius", "knock-up"],
+            "Targeted Fireball": ["ignite", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Telekinesy": ["duration", "timer", "delay", "mana", "stamina", "cooldown", "knockback"],
+            "Throw Up": ["duration", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Thrust": ["damage", "mana", "stamina", "cooldown", "timer"],
+            "Burning Hands": ["duration", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Thunder Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Thunder Crit Subskill 1": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Thunder Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Thunder Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "TNT Throw": ["mana", "stamina", "cooldown", "timer", "force"],
+            "Unknowing Fire": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown"],
+            "Vampirism": ["mana", "stamina", "cooldown", "drain", "timer"],
+            "Void Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Void Zapper": ["damage", "mana", "stamina", "cooldown", "length", "knockback", "extra", "max", "timer"],
+            "Warp": ["timer", "delay", "mana", "stamina", "cooldown", "range"],
+            "Chi Blast": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Crit Subskill 1": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Crit Subskill 2": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Surface Slash": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Water Wheel": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Weaken": ["duration", "timer", "delay", "mana", "stamina", "cooldown", "ratio", "knockback"],
+            "Weaken Target": ["duration", "mana", "stamina", "cooldown", "timer", "extra-damage"],
+            "Whip Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Whip Attack Hit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Arcane Hail": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "radius"],
+            "Chicken Wraith": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "inaccuracy", "force"],
+            "Whip Attack Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Wind Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Wither": ["duration", "mana", "stamina", "cooldown", "amplifier", "timer"],
+            "Circular Slash": ["damage", "mana", "stamina", "cooldown", "timer", "knockback", "radius"],
+            "Backstab": ["timer", "delay", "mana", "stamina", "extra", "cooldown"],
+            "Xray Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Whirlpool": ["damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Wind Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Wind Crit Sub Skill": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Combo Attack": ["timer", "damage", "delay", "mana", "stamina", "cooldown", "count"],
+            "Confuse": ["mana", "stamina", "cooldown", "timer"],
+            "Constant Flux": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Contamination": ["duration", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Control": ["duration", "timer", "delay", "mana", "stamina", "cooldown", "knockback"],
+            "Corrosion": ["duration", "mana", "stamina", "cooldown", "timer", "amplifier", "radius"],
+            "Corrupt": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "amplifier"],
+            "Corrupted Fangs": ["damage", "mana", "fangs", "stamina", "cooldown", "timer"],
+            "Arcane Rift": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "amplifier", "speed"],
+            "Counterstrike": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Crossbow Arrow Tick": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Crossbow Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Cursed Beam": ["duration", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Death Mark": ["duration", "damage", "mana", "stamina", "cooldown", "amplifier", "timer"],
+            "Deep Wound": ["timer", "damage", "delay", "mana", "stamina", "extra", "cooldown"],
+            "Dragon Fists": ["duration", "damage", "timer", "delay", "mana", "stamina", "heal", "cooldown"],
+            "Earth Clap": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Earth Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Earth Crit Subskill": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Beads Of Karma": ["damage", "timer", "delay", "mana", "stamina", "heal", "cooldown"],
+            "Earth Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Earthquake": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "amplifier"],
+            "Earth Ring": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Earth Rubble": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Earth Shift": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Earth Shockwave": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Earth Spikes": ["damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Earth Wave": ["damage", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Empowered Attack": ["timer", "delay", "mana", "stamina", "extra", "cooldown", "radius", "ratio"],
+            "Empty Skill": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Black Hole": ["duration", "mana", "stamina", "cooldown", "radius", "timer"],
+            "Evade": ["duration", "timer", "delay", "mana", "stamina", "cooldown"],
+            "Explosive Turkey": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "knockback", "radius"],
+            "Fireball": ["timer", "damage", "ignite", "delay", "mana", "stamina", "cooldown", "ratio"],
+            "Fire Berserker": ["timer", "delay", "mana", "stamina", "extra", "cooldown"],
+            "Firebolt": ["damage", "ignite", "mana", "stamina", "cooldown", "timer"],
+            "Fire Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Fire Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Firefly": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "knockback"],
+            "Fire Meteor": ["damage", "mana", "stamina", "cooldown", "timer", "knockback", "radius"],
+            "Fire Rage": ["duration", "timer", "damage", "ignite", "delay", "mana", "stamina", "cooldown", "count"],
+            "Blazing Slash": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown"],
+            "Fire Storm": ["timer", "damage", "ignite", "delay", "mana", "stamina", "cooldown"],
+            "Flame Tiger": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown"],
+            "Flowing Dance": ["damage", "timer", "delay", "mana", "stamina", "cooldown", "skillcooldown"],
+            "Focus Chi": ["timer", "delay", "mana", "stamina", "heal", "cooldown"],
+            "Freeze": ["duration", "mana", "stamina", "cooldown", "timer", "amplifier", "radius"],
+            "Freezing Curse": ["duration", "damage", "mana", "stamina", "cooldown", "amplifier", "radius", "timer"],
+            "Frog Mode": ["duration", "mana", "stamina", "cooldown", "jump-force", "speed", "timer"],
+            "Frozen Aura": ["duration", "mana", "stamina", "cooldown", "timer", "amplifier", "radius"],
+            "Furtive Strike": ["timer", "damage", "delay", "mana", "stamina", "extra", "cooldown", "radius"],
+            "Gauntlet Special Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Blazing Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Grand Heal": ["mana", "stamina", "heal", "cooldown", "radius", "timer"],
+            "Greater Healings": ["timer", "delay", "mana", "stamina", "cooldown", "heal"],
+            "Heal": ["mana", "stamina", "heal", "cooldown", "timer"],
+            "Heavy Charge": ["damage", "mana", "stamina", "cooldown", "timer", "knockback"],
+            "Hoearthquake": ["mana", "stamina", "cooldown", "timer"],
+            "Holy Missile": ["duration", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Human Shield": ["redirect", "duration", "timer", "delay", "mana", "low", "stamina", "cooldown", "reduction"],
+            "Ice Critical Strike": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Ice Crit Strike Subskill": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Ice Crystal": ["duration", "damage", "mana", "stamina", "cooldown", "timer", "amplifier"],
+            "Blazing Universe": ["damage", "timer", "delay", "burnduration", "mana", "stamina", "burndamage", "cooldown"],
+            "Ice Elemental Attack": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Ice Spikes": ["timer", "damage", "delay", "mana", "slow", "stamina", "cooldown"],
+            "Ignite": ["duration", "mana", "max-ignite", "stamina", "cooldown", "radius", "timer"],
+            "Item Bomb": ["damage", "mana", "slow-duration", "slow-amplifier", "stamina", "cooldown", "radius", "timer"],
+            "Item Throw": ["damage", "mana", "stamina", "cooldown", "timer", "force"],
+            "Leap": ["mana", "stamina", "cooldown", "timer", "force"],
+            "Life Ender": ["damage", "mana", "stamina", "cooldown", "timer", "knockback", "radius"],
+            "Light Dash": ["damage", "mana", "stamina", "cooldown", "timer", "length"],
+            "Lightning Beam": ["damage", "mana", "stamina", "cooldown", "timer", "radius"],
+            "Lightning Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Blind": ["duration", "mana", "stamina", "cooldown", "timer"],
+            "Magical Path": ["duration", "mana", "stamina", "cooldown", "timer"],
+            "Magical Shield": ["duration", "mana", "stamina", "cooldown", "power", "radius", "timer"],
+            "Magma Fissure": ["ignite", "damage", "mana", "stamina", "cooldown", "timer"],
+            "Mana Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Minor Explosion": ["damage", "mana", "stamina", "cooldown", "timer", "knockback", "radius"],
+            "Minor Healings": ["timer", "delay", "mana", "stamina", "cooldown", "heal"],
+            "Neptune Gift": ["timer", "delay", "mana", "stamina", "extra", "cooldown"],
+            "Nether Spirit": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "None": ["timer", "delay", "mana", "stamina", "cooldown"],
+            "Overload": ["damage", "mana", "stamina", "cooldown", "timer", "radius"],
+            "Zen Throw": ["duration", "damage", "timer", "delay", "mana", "stamina", "cooldown"],
+        };
+
+        const abilityTriggers = [
+            "cast", "shoot-bow", "shoot-trident", "sneak", "shift-left-click", "arrow-tick", "timer", "death", "trident-land", "arrow-land", "trident-tick", "kill-entity", "right-click", "attack", "arrow-hit", "login", "api", "damaged", "left-click", "trident-hit", "damaged-by-entity", "shift-right-click"
+        ];
+        
+        const smallCapsMap = {
+            'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ꜰ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ',
+            'j': 'ᴊ', 'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ', 'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ',
+            's': 's', 't': 'ᴛ', 'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ', 'z': 'ᴢ',
+            'A': 'ᴀ', 'B': 'ʙ', 'C': 'ᴄ', 'D': 'ᴅ', 'E': 'ᴇ', 'F': 'ꜰ', 'G': 'ɢ', 'H': 'ʜ', 'I': 'ɪ',
+            'J': 'ᴊ', 'K': 'ᴋ', 'L': 'ʟ', 'M': 'ᴍ', 'N': 'ɴ', 'O': 'ᴏ', 'P': 'ᴘ', 'Q': 'ǫ', 'R': 'ʀ',
+            'S': 's', 'T': 'ᴛ', 'U': 'ᴜ', 'V': 'ᴠ', 'W': 'ᴡ', 'X': 'x', 'Y': 'ʏ', 'Z': 'ᴢ',
+            '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
+            '[': '⟦', ']': '⟧', '(': '₍', ')': '₎', '+': '⁺', '-': '⁻', '=': '₌'
+        };
+
+        function populateStatOptions() {
+            const resourceContainer = document.getElementById('resourceStats');
+            const atkContainer = document.getElementById('atkStats');
+            const defContainer = document.getElementById('defStats');
+
+            const createStatElement = (stat) => `
+                <label class="flex items-center gap-2 px-4 py-2 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors">
+                    <input type="checkbox" name="statOption" value="${stat}" class="form-checkbox text-teal-500 rounded-sm focus:ring-teal-500 bg-gray-800 border-gray-600">
+                    <span class="text-gray-200">${stat.replace(/-/g, ' ')}</span>
+                </label>
+            `;
+
+            resourceContainer.innerHTML = statGroups.resource.map(createStatElement).join('');
+            atkContainer.innerHTML = statGroups.atk.map(createStatElement).join('');
+            defContainer.innerHTML = statGroups.def.map(createStatElement).join('');
+        }
+
+        function toggleSection(sectionId) {
+            const container = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId + 'Arrow');
+            const isHidden = container.style.display === 'none' || container.style.display === '';
+            container.style.display = isHidden ? 'grid' : 'none';
+            arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+        }
+        
+        function toggleStats(groupId) {
+            const container = document.getElementById(groupId);
+            const arrow = document.getElementById(groupId + 'Arrow');
+            const isHidden = container.style.display === 'none' || container.style.display === '';
+            container.style.display = isHidden ? 'grid' : 'none';
+            arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+        }
+        
+        function getRandomValue(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function randomStats() {
+            const tier = document.getElementById('itemTier').value;
+            const tierInfo = tierStats[tier];
+            
+            const allStatCheckboxes = document.querySelectorAll('#statOptions input[name="statOption"]');
+            allStatCheckboxes.forEach(checkbox => checkbox.checked = false);
+
+            const visibleStatGroups = Array.from(document.querySelectorAll('.stat-group-content[style*="display: grid"]'));
+            
+            if (visibleStatGroups.length > 0) {
+                visibleStatGroups.forEach(group => {
+                    const groupId = group.id.replace('Stats', '');
+                    const allGroupStats = statGroups[groupId];
+                    
+                    const nonDebuffStats = allGroupStats.filter(stat => !statGroups.debuffs.includes(stat));
+                    shuffle(nonDebuffStats).slice(0, tierInfo.buffCount).forEach(stat => {
+                        const checkbox = group.querySelector(`input[value="${stat}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                    
+                    const debuffStats = allGroupStats.filter(stat => statGroups.debuffs.includes(stat));
+                    shuffle(debuffStats).slice(0, tierInfo.debuffCount).forEach(stat => {
+                        const checkbox = group.querySelector(`input[value="${stat}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                });
+            } else {
+                const allStats = [...statGroups.resource, ...statGroups.atk, ...statGroups.def];
+                const allNonDebuffStats = allStats.filter(stat => !statGroups.debuffs.includes(stat));
+                const allDebuffStats = allStats.filter(stat => statGroups.debuffs.includes(stat));
+
+                shuffle(allNonDebuffStats).slice(0, tierInfo.buffCount).forEach(stat => {
+                    const checkbox = document.querySelector(`#statOptions input[value="${stat}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+                
+                shuffle(allDebuffStats).slice(0, tierInfo.debuffCount).forEach(stat => {
+                    const checkbox = document.querySelector(`#statOptions input[value="${stat}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+        }
+        
+        function useSampleLore() {
+            const tier = document.getElementById('itemTier').value;
+            const lore = sampleLores[tier];
+            if (lore) {
+                document.getElementById('itemLore').value = lore.join('\n');
+            }
+        }
+
+        function addAbility() {
+            const abilitiesContainer = document.getElementById('abilitiesContainer');
+            const abilityDiv = document.createElement('div');
+            abilityDiv.className = "p-4 bg-gray-700 rounded-lg shadow-inner";
+            abilityDiv.innerHTML = `
+                <div class="flex justify-end">
+                    <button type="button" class="remove-ability-btn text-red-400 hover:text-red-500">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Loại (Type)</label>
+                        <select class="ability-type w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md">
+                            <option value="" selected disabled>Chọn loại</option>
+                            ${Object.keys(abilities).map(type => `<option value="${type}">${type.replace(/_/g, ' ')}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Kích hoạt (Trigger)</label>
+                        <select class="ability-trigger w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md">
+                            <option value="" selected disabled>Chọn kích hoạt</option>
+                            ${abilityTriggers.map(trigger => `<option value="${trigger}">${trigger.replace(/-/g, ' ')}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="ability-params md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Ability parameters will be populated here -->
+                    </div>
+                </div>
+            `;
+            abilitiesContainer.appendChild(abilityDiv);
+
+            const typeSelect = abilityDiv.querySelector('.ability-type');
+            const paramContainer = abilityDiv.querySelector('.ability-params');
+
+            typeSelect.addEventListener('change', () => {
+                paramContainer.innerHTML = '';
+                const selectedType = typeSelect.value;
+                const params = abilities[selectedType];
+                if (params) {
+                    params.forEach(param => {
+                        const paramDiv = document.createElement('div');
+                        paramDiv.innerHTML = `
+                            <label class="block text-sm font-medium text-gray-300 mb-1">${param.replace(/-/g, ' ')}</label>
+                            <input type="number" class="ability-param w-full px-3 py-1 bg-gray-600 text-gray-200 border border-gray-500 rounded-md" data-param-name="${param}">
+                        `;
+                        paramContainer.appendChild(paramDiv);
+                    });
+                }
+            });
+
+            abilityDiv.querySelector('.remove-ability-btn').addEventListener('click', () => {
+                abilityDiv.remove();
+            });
+        }
+        
+        function generateMMOItem() {
+            const itemId = document.getElementById('itemId').value.toUpperCase().replace(/\s+/g, '_');
+            const itemName = document.getElementById('itemName').value || 'Vật Phẩm Mới';
+            const itemMaterial = document.getElementById('itemMaterial').value.toUpperCase() || 'DIAMOND_SWORD';
+            const modelId = document.getElementById('modelId').value;
+            const itemLore = document.getElementById('itemLore').value.split('\n').filter(line => line.trim() !== '');
+            const tier = document.getElementById('itemTier').value;
+            const selectedStats = Array.from(document.querySelectorAll('input[name="statOption"]:checked')).map(el => el.value);
+            const specialOptions = Array.from(document.querySelectorAll('input[name="specialOption"]:checked')).map(el => el.value);
+            const elementalDamageInputs = document.querySelectorAll('.elemental-damage-input');
+            const durability = document.getElementById('durability').value;
+            const requiredLevel = document.getElementById('requiredLevel').value;
+            const gemSockets = document.getElementById('gemSockets').value;
+            const itemCooldown = document.getElementById('itemCooldown').value;
+            const outputCode = document.getElementById('outputCode');
+
+            if (!itemId) {
+                outputCode.value = "Lỗi: Vui lòng nhập ID vật phẩm.";
+                return;
+            }
+            
+            let yaml = `${itemId}:\n`;
+            yaml += `  base:\n`;
+            yaml += `    material: ${itemMaterial}\n`;
+            yaml += `    name: '${itemName}'\n`;
+            
+            if (modelId) {
+                yaml += `    custom-model-data: ${modelId}\n`;
+            }
+            
+            if (durability) {
+                yaml += `    max-durability: ${durability}\n`;
+            }
+
+            if (requiredLevel) {
+                yaml += `    required-level: ${requiredLevel}\n`;
+            }
+
+            if (gemSockets) {
+                yaml += `    gem-sockets: ${gemSockets}\n`;
+            }
+
+            if (itemCooldown) {
+                yaml += `    cooldown: ${itemCooldown}\n`;
+            }
+            
+            specialOptions.forEach(option => {
+                yaml += `    ${option}: true\n`;
+            });
+
+            selectedStats.forEach(stat => {
+                const value = getRandomValue(0, 100);
+                yaml += `    ${stat}: ${value}\n`;
+            });
+
+            elementalDamageInputs.forEach(input => {
+                if (input.value) {
+                    yaml += `    ${input.dataset.element}-damage: ${input.value}\n`;
+                }
+            });
+
+            const abilitiesDivs = document.querySelectorAll('#abilitiesContainer > div');
+            if (abilitiesDivs.length > 0) {
+                yaml += `  abilities:\n`;
+                abilitiesDivs.forEach(abilityDiv => {
+                    const type = abilityDiv.querySelector('.ability-type').value;
+                    const trigger = abilityDiv.querySelector('.ability-trigger').value;
+
+                    if (type && trigger) {
+                        yaml += `    ${trigger.toLowerCase().replace(/-/g, '_')}:\n`;
+                        yaml += `      type: ${type.toUpperCase().replace(/ /g, '_')}\n`;
+                        
+                        const paramInputs = abilityDiv.querySelectorAll('.ability-param');
+                        paramInputs.forEach(input => {
+                            const paramName = input.dataset.paramName;
+                            const paramValue = input.value;
+                            if (paramValue) {
+                                yaml += `      ${paramName.replace(/-/g, '_')}: ${paramValue}\n`;
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (itemLore.length > 0) {
+                yaml += `    lore:\n`;
+                itemLore.forEach(line => {
+                    yaml += `    - '${line}'\n`;
+                });
+            }
+
+            yaml += `    tier: ${tier}\n`;
+
+            outputCode.value = yaml;
+        }
+
+        function openTab(tabName) {
+            const tabs = ['mmoitems', 'smallcaps'];
+            tabs.forEach(tab => {
+                document.getElementById(tab).classList.add('hidden');
+            });
+            document.getElementById(tabName).classList.remove('hidden');
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+                button.classList.add('inactive');
+            });
+            event.currentTarget.classList.add('active');
+            event.currentTarget.classList.remove('inactive');
+        }
+
+        function convertToSmallCaps() {
+            const smallCapsInput = document.getElementById('smallCapsInput');
+            const smallCapsOutput = document.getElementById('smallCapsOutput');
+            const lines = smallCapsInput.value.split('\n');
+            const result = lines.map(line => {
+                return line.split(' ').map(word => {
+                    if (word.startsWith('&') || word.includes('m')) {
+                        return word;
+                    }
+                    return word.split('').map(char => smallCapsMap[char] || char).join('');
+                }).join(' ');
+            }).join('\n');
+            smallCapsOutput.value = result;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateStatOptions();
+            document.getElementById('generateBtn').addEventListener('click', generateMMOItem);
+            document.getElementById('randomStatsBtn').addEventListener('click', randomStats);
+            document.getElementById('addAbilityBtn').addEventListener('click', addAbility);
+            document.getElementById('useSampleLoreBtn').addEventListener('click', useSampleLore);
+            document.getElementById('convertSmallCapsBtn').addEventListener('click', convertToSmallCaps);
+            document.getElementById('copyBtn').addEventListener('click', () => {
+                const outputCode = document.getElementById('outputCode');
+                const copyMessage = document.getElementById('copyMessage');
+                if (outputCode.value) {
+                    navigator.clipboard.writeText(outputCode.value);
+                    copyMessage.classList.add('opacity-100');
+                    setTimeout(() => copyMessage.classList.remove('opacity-100'), 1500);
+                }
+            });
+
+            document.getElementById('copySmallCapsBtn').addEventListener('click', () => {
+                const smallCapsOutput = document.getElementById('smallCapsOutput');
+                if (smallCapsOutput.value) {
+                    navigator.clipboard.writeText(smallCapsOutput.value);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
